@@ -1,10 +1,14 @@
 'use strict'
-var debug = require('debug')('hash-stream-validation')
+// var debug = require('debug')('hash-stream-validation')
+// debug.enabled =  true
+const debug = (...args) => console.log('[hash-stream-validation]', ...args)
 
 var crc
 try {
   crc = require('fast-crc32c')
   debug('Using fast-crc32c')
+  const sse4_crc32 = require('sse4_crc32')
+  debug('sse4_crc32.isHardwareCrcSupported', sse4_crc32.isHardwareCrcSupported())
 } catch (e) {
   crc = require('./crc32c.js')
   debug('Using ./crc32c.js')
