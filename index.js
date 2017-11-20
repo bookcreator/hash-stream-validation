@@ -1,10 +1,13 @@
 'use strict'
+var debug = require('debug')('hash-stream-validation')
 
 var crc
 try {
   crc = require('fast-crc32c')
+  debug('Using fast-crc32c')
 } catch (e) {
   crc = require('./crc32c.js')
+  debug('Using ./crc32c.js')
 }
 
 var crypto = require('crypto')
@@ -15,6 +18,8 @@ module.exports = function (cfg) {
 
   var crc32c = cfg.crc32c !== false
   var md5 = cfg.md5 !== false
+
+  debug('Config:', { crc32c, md5 })
 
   var hashes = {}
   if (md5) hashes.md5 = crypto.createHash('md5')
@@ -36,6 +41,7 @@ module.exports = function (cfg) {
   var validationStream = through(onData, onFlush)
 
   validationStream.test = function (algo, sum) {
+    debug(`Testing ${algo} - actual: ${hashes[algo]}, expected: ${sum} [${hashes[algo] === sum}]`)
     return hashes[algo] === sum
   }
 
